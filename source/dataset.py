@@ -1,5 +1,4 @@
 """Dataset stuff."""
-import argparse
 
 
 class Dataset:
