@@ -19,6 +19,9 @@ LINT = $(PYTHON) -m pylint
 
 all:
 
+cmd_dset:
+	$(PYTHON) $(SOURCE)/cli.py dataset dataset/en_names.txt
+
 test:
 	$(PTEST) -s $(TESTS)/test/$(T)
 

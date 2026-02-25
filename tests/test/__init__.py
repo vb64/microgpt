@@ -9,7 +9,7 @@ class TestBase(TestCase):
     @staticmethod
     def fixture(*path):
         """Return full path for file in 'fixtures' dir."""
-        return os.path.join('fixtures', *path)
+        return os.path.join('dataset', *path)
 
     @staticmethod
     def build(*path):
