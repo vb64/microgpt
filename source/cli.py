@@ -1,6 +1,8 @@
 """CLI interface."""
 import argparse
 
+from dataset import Dataset
+
 
 class Command:
     """Runner commands."""
@@ -26,7 +28,8 @@ def main(options):
     print("MicroGPT runner.")
 
     if options.command == Command.Dataset:
-        print("Dataset from", options.filename)
+        data = Dataset(options.filename)
+        print("Dataset from", data.file_name, "docs:", len(data.docs))
 
     print("Done")
 
