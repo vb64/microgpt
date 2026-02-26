@@ -96,7 +96,7 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
         return linear(x, self.state_dict['lm_head'])  # logits
 
-    def learn(self, docs):  # pylint: disable=too-many-locals
+    def learn(self, docs, progress_bar=None):  # pylint: disable=too-many-locals
         """Train model with given list of docs."""
         tok = Tokenizer(docs)
         self.state_dict = {
@@ -144,3 +144,7 @@ class Model:  # pylint: disable=too-many-instance-attributes
                 v_hat = v[i] / (1 - beta2 ** (step + 1))
                 p.data -= lr_t * m_hat / (v_hat ** 0.5 + eps_adam)
                 p.grad = 0
+
+            if progress_bar:
+                if progress_bar(step, "loss {:.4f}".format(loss.data)):
+                    break
