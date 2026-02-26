@@ -50,11 +50,6 @@ class Model:  # pylint: disable=too-many-instance-attributes
             self.state_dict[layer_name + 'mlp_fc1'] = matrix(4 * self.n_embd, self.n_embd)
             self.state_dict[layer_name + 'mlp_fc2'] = matrix(self.n_embd, 4 * self.n_embd)
 
-        self.learning_rate = 0.01
-        self.beta1 = 0.85
-        self.beta2 = 0.99
-        self.eps_adam = 1e-8
-
     def gpt(self, token_id, pos_id, keys, values):  # pylint: disable=too-many-locals
         """Return gpt."""
         tok_emb = self.state_dict['wte'][token_id]  # token embedding
@@ -110,8 +105,13 @@ class Model:  # pylint: disable=too-many-instance-attributes
         }
         # flatten params into a single list[Value]
         params = [p for mat in self.state_dict.values() for row in mat for p in row]
+
         # Let there be Adam, the blessed optimizer and its buffers
+        learning_rate = 0.01
+        beta1 = 0.85
+        beta2 = 0.99
+        eps_adam = 1e-8
         m = [0.0] * len(params)  # first moment buffer
         v = [0.0] * len(params)  # second moment buffer
 
-        return (m, v)
+        return (learning_rate, beta1, beta2, eps_adam, m, v)
