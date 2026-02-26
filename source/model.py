@@ -150,7 +150,9 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
             if progress_bar:
                 if progress_bar(step, "loss {:.4f}".format(loss.data)):
-                    return
+                    return len(params)
+
+        return len(params)
 
     def ask(self, temperature=1):  # in (0, 1], control the "creativity" of generated text, low to high
         """Inference: may the model babble back to us."""
