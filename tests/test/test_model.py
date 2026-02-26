@@ -10,7 +10,9 @@ class TestModel(TestBase):
 
     def test_model(self):
         """Check model methods."""
-        from model import Model
+        from model import Model, random
+
+        random.seed(13)  # Let there be order among chaos. 42 ???
 
         model = Model()
         assert model.state_dict
