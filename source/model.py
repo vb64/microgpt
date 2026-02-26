@@ -102,10 +102,10 @@ class Model:  # pylint: disable=too-many-instance-attributes
     def learn(self, docs, progress_bar=None):  # pylint: disable=too-many-locals
         """Train model with given list of docs."""
         self.tok = Tokenizer(docs)
-        self.state_dict = {
+        self.state_dict.update({
           'wte': matrix(self.tok.size, self.n_embd),
           'lm_head': matrix(self.tok.size, self.n_embd),
-        }
+        })
         # flatten params into a single list[Value]
         params = [p for mat in self.state_dict.values() for row in mat for p in row]
 
