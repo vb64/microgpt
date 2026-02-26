@@ -40,6 +40,7 @@ class Model:  # pylint: disable=too-many-instance-attributes
         self.state_dict = {
           'wpe': matrix(self.block_size, self.n_embd),
         }
+        self.tok = None
 
         for i in range(self.n_layer):
             layer_name = 'layer{}.'.format(i)
@@ -98,10 +99,10 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
     def learn(self, docs, progress_bar=None):  # pylint: disable=too-many-locals
         """Train model with given list of docs."""
-        tok = Tokenizer(docs)
+        self.tok = Tokenizer(docs)
         self.state_dict = {
-          'wte': matrix(tok.size, self.n_embd),
-          'lm_head': matrix(tok.size, self.n_embd),
+          'wte': matrix(self.tok.size, self.n_embd),
+          'lm_head': matrix(self.tok.size, self.n_embd),
         }
         # flatten params into a single list[Value]
         params = [p for mat in self.state_dict.values() for row in mat for p in row]
@@ -117,7 +118,7 @@ class Model:  # pylint: disable=too-many-instance-attributes
         num_steps = len(docs)
 
         for step, doc in enumerate(docs):
-            tokens = tok.tokenize(doc)
+            tokens = self.tok.tokenize(doc)
             n = min(self.block_size, len(tokens) - 1)
 
             # Forward the token sequence through the model,
@@ -147,4 +148,4 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
             if progress_bar:
                 if progress_bar(step, "loss {:.4f}".format(loss.data)):
-                    break
+                    return
