@@ -44,13 +44,13 @@ class Model:  # pylint: disable=too-many-instance-attributes
         self.tok = None
 
         for i in range(self.n_layer):
-            layer_name = 'layer{}.'.format(i)
-            self.state_dict[layer_name + 'attn_wq'] = matrix(self.n_embd, self.n_embd)
-            self.state_dict[layer_name + 'attn_wk'] = matrix(self.n_embd, self.n_embd)
-            self.state_dict[layer_name + 'attn_wv'] = matrix(self.n_embd, self.n_embd)
-            self.state_dict[layer_name + 'attn_wo'] = matrix(self.n_embd, self.n_embd)
-            self.state_dict[layer_name + 'mlp_fc1'] = matrix(4 * self.n_embd, self.n_embd)
-            self.state_dict[layer_name + 'mlp_fc2'] = matrix(self.n_embd, 4 * self.n_embd)
+            l_name = 'layer{}.'.format(i)
+            self.state_dict[l_name + 'attn_wq'] = matrix(self.n_embd, self.n_embd)
+            self.state_dict[l_name + 'attn_wk'] = matrix(self.n_embd, self.n_embd)
+            self.state_dict[l_name + 'attn_wv'] = matrix(self.n_embd, self.n_embd)
+            self.state_dict[l_name + 'attn_wo'] = matrix(self.n_embd, self.n_embd)
+            self.state_dict[l_name + 'mlp_fc1'] = matrix(4 * self.n_embd, self.n_embd)
+            self.state_dict[l_name + 'mlp_fc2'] = matrix(self.n_embd, 4 * self.n_embd)
 
     def gpt(self, token_id, pos_id, keys, values):  # pylint: disable=too-many-locals
         """Return gpt."""
