@@ -14,4 +14,13 @@ class TestModel(TestBase):
 
         model = Model()
         assert model.state_dict
+
+        returns = [True, False]
+
+        assert model.learn(
+          self.data.docs[:3],
+          progress_bar=lambda step, txt: returns.pop()
+        ) == 3584
+
+        model = Model()
         assert model.learn(self.data.docs[:3]) == 3584
