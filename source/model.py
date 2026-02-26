@@ -96,7 +96,7 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
         return linear(x, self.state_dict['lm_head'])  # logits
 
-    def learn(self, docs):
+    def learn(self, docs):  # pylint: disable=too-many-locals
         """Train model with given list of docs."""
         tok = Tokenizer(docs)
         self.state_dict = {
@@ -113,5 +113,36 @@ class Model:  # pylint: disable=too-many-instance-attributes
         eps_adam = 1e-8
         m = [0.0] * len(params)  # first moment buffer
         v = [0.0] * len(params)  # second moment buffer
+
+        num_steps = len(docs)
+
+        for step, doc in enumerate(docs):
+            tokens = tok.tokenize(doc)
+            n = min(self.block_size, len(tokens) - 1)
+
+            # Forward the token sequence through the model,
+            # building up the computation graph all the way to the loss
+            keys, values = [[] for _ in range(self.n_layer)], [[] for _ in range(self.n_layer)]
+            losses = []
+            for pos_id in range(n):
+                token_id, target_id = tokens[pos_id], tokens[pos_id + 1]
+                logits = self.gpt(token_id, pos_id, keys, values)
+                probs = softmax(logits)
+                loss_t = -probs[target_id].log()
+                losses.append(loss_t)
+            loss = (1 / n) * sum(losses)  # final average loss over the document sequence. May yours be low.
+
+            # Backward the loss, calculating the gradients with respect to all model parameters
+            loss.backward()
+
+            # Adam optimizer update: update the model parameters based on the corresponding gradients
+            lr_t = learning_rate * (1 - step / num_steps)  # linear learning rate decay
+            for i, p in enumerate(params):
+                m[i] = beta1 * m[i] + (1 - beta1) * p.grad
+                v[i] = beta2 * v[i] + (1 - beta2) * p.grad ** 2
+                m_hat = m[i] / (1 - beta1 ** (step + 1))
+                v_hat = v[i] / (1 - beta2 ** (step + 1))
+                p.data -= lr_t * m_hat / (v_hat ** 0.5 + eps_adam)
+                p.grad = 0
 
         return (learning_rate, beta1, beta2, eps_adam, m, v)
