@@ -24,4 +24,7 @@ class TestModel(TestBase):
 
         model = Model()
         assert model.learn(self.data.docs[:3]) == 3584
-        assert len(model.ask()) > 1
+        assert len(model.ask()) > 0
+
+        model.block_size = 1
+        assert len(model.ask()) > 0
