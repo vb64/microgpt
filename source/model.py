@@ -1,4 +1,5 @@
 """Model micro."""
+import random
 from autograd import matrix
 from tokens import Tokenizer
 
@@ -150,3 +151,18 @@ class Model:  # pylint: disable=too-many-instance-attributes
             if progress_bar:
                 if progress_bar(step, "loss {:.4f}".format(loss.data)):
                     return
+
+    def ask(self, temperature=1):  # in (0, 1], control the "creativity" of generated text, low to high
+        """Inference: may the model babble back to us."""
+        keys, values = [[] for _ in range(self.n_layer)], [[] for _ in range(self.n_layer)]
+        token_id = self.tok.bos
+        sample = []
+        for pos_id in range(self.block_size):
+            logits = self.gpt(token_id, pos_id, keys, values)
+            probs = softmax([logit / temperature for logit in logits])
+            token_id = random.choices(range(self.tok.size), weights=[p.data for p in probs])[0]
+            if token_id == self.tok.bos:
+                break
+            sample.append(self.tok.uchars[token_id])
+
+        return ''.join(sample)
