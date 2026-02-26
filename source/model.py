@@ -1,5 +1,6 @@
 """Model micro."""
 from autograd import matrix
+from tokens import Tokenizer
 
 
 # Define the model architecture: a function mapping tokens and parameters to logits over what comes next
@@ -37,9 +38,7 @@ class Model:  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         """Initialize the parameters, to store the knowledge of the model."""
         self.state_dict = {
-          # 'wte': matrix(vocab_size, self.n_embd),
           'wpe': matrix(self.block_size, self.n_embd),
-          # 'lm_head': matrix(vocab_size, self.n_embd),
         }
 
         for i in range(self.n_layer):
@@ -51,21 +50,10 @@ class Model:  # pylint: disable=too-many-instance-attributes
             self.state_dict[layer_name + 'mlp_fc1'] = matrix(4 * self.n_embd, self.n_embd)
             self.state_dict[layer_name + 'mlp_fc2'] = matrix(self.n_embd, 4 * self.n_embd)
 
-        # flatten params into a single list[Value]
-        self.params = [p for mat in self.state_dict.values() for row in mat for p in row]
-
-        # Let there be Adam, the blessed optimizer and its buffers
         self.learning_rate = 0.01
         self.beta1 = 0.85
         self.beta2 = 0.99
         self.eps_adam = 1e-8
-
-        self.m = [0.0] * len(self.params)  # first moment buffer
-        self.v = [0.0] * len(self.params)  # second moment buffer
-
-    def __str__(self):
-        """Return string representation."""
-        return "num params: {}".format(len(self.params))
 
     def gpt(self, token_id, pos_id, keys, values):  # pylint: disable=too-many-locals
         """Return gpt."""
@@ -111,5 +99,19 @@ class Model:  # pylint: disable=too-many-instance-attributes
             x = linear(x, self.state_dict[f'layer{li}.mlp_fc2'])
             x = [a + b for a, b in zip(x, x_residual)]
 
-        logits = linear(x, self.state_dict['lm_head'])
-        return logits
+        return linear(x, self.state_dict['lm_head'])  # logits
+
+    def learn(self, docs):
+        """Train model with given list of docs."""
+        tok = Tokenizer(docs)
+        self.state_dict = {
+          'wte': matrix(tok.size, self.n_embd),
+          'lm_head': matrix(tok.size, self.n_embd),
+        }
+        # flatten params into a single list[Value]
+        params = [p for mat in self.state_dict.values() for row in mat for p in row]
+        # Let there be Adam, the blessed optimizer and its buffers
+        m = [0.0] * len(params)  # first moment buffer
+        v = [0.0] * len(params)  # second moment buffer
+
+        return (m, v)
