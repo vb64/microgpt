@@ -24,3 +24,4 @@ class TestModel(TestBase):
 
         model = Model()
         assert model.learn(self.data.docs[:3]) == 3584
+        assert len(model.ask()) > 1
