@@ -144,5 +144,3 @@ class Model:  # pylint: disable=too-many-instance-attributes
                 v_hat = v[i] / (1 - beta2 ** (step + 1))
                 p.data -= lr_t * m_hat / (v_hat ** 0.5 + eps_adam)
                 p.grad = 0
-
-        return (learning_rate, beta1, beta2, eps_adam, m, v)
