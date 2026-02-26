@@ -59,13 +59,14 @@ class Model:  # pylint: disable=too-many-instance-attributes
         x = rmsnorm(x)  # note: not redundant due to backward pass via the residual connection
 
         for li in range(self.n_layer):
+            l_name = 'layer{}.'.format(li)
 
             # 1) Multi-head Attention block
             x_residual = x
             x = rmsnorm(x)
-            q = linear(x, self.state_dict[f'layer{li}.attn_wq'])
-            k = linear(x, self.state_dict[f'layer{li}.attn_wk'])
-            v = linear(x, self.state_dict[f'layer{li}.attn_wv'])
+            q = linear(x, self.state_dict[l_name + 'attn_wq'])
+            k = linear(x, self.state_dict[l_name + 'attn_wk'])
+            v = linear(x, self.state_dict[l_name + 'attn_wv'])
             keys[li].append(k)
             values[li].append(v)
             x_attn = []
@@ -84,15 +85,15 @@ class Model:  # pylint: disable=too-many-instance-attributes
                   for j in range(self.head_dim)
                 ]
                 x_attn.extend(head_out)
-            x = linear(x_attn, self.state_dict[f'layer{li}.attn_wo'])
+            x = linear(x_attn, self.state_dict[l_name + 'attn_wo'])
             x = [a + b for a, b in zip(x, x_residual)]
 
             # 2) MLP block
             x_residual = x
             x = rmsnorm(x)
-            x = linear(x, self.state_dict[f'layer{li}.mlp_fc1'])
+            x = linear(x, self.state_dict[l_name + 'mlp_fc1'])
             x = [xi.relu() for xi in x]
-            x = linear(x, self.state_dict[f'layer{li}.mlp_fc2'])
+            x = linear(x, self.state_dict[l_name + 'mlp_fc2'])
             x = [a + b for a, b in zip(x, x_residual)]
 
         return linear(x, self.state_dict['lm_head'])  # logits
