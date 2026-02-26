@@ -4,10 +4,10 @@
 class Tokenizer:
     """Let there be a Tokenizer to translate strings to sequences of integers ("tokens") and back."""
 
-    def __init__(self, dataset):
-        """Create tokens for given dataset."""
+    def __init__(self, docs):
+        """Create tokens for given doc list."""
         # unique characters in the dataset become token ids 0..n-1
-        self.uchars = sorted(set(''.join(dataset.docs)))
+        self.uchars = sorted(set(''.join(docs)))
         self.bos = len(self.uchars)  # token id for a special Beginning of Sequence (BOS) token
         self.size = self.bos + 1  # total number of unique tokens, +1 is for BOS
 

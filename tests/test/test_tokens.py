@@ -16,7 +16,7 @@ class TestTokens(TestBase):
         data = Dataset(self.fixture('en_names.txt'))
         assert len(data.docs) == 32033
 
-        tok = Tokenizer(data)
+        tok = Tokenizer(data.docs)
         assert tok.size == 27
         assert tok.bos == 26
         assert ': 27' in str(tok)
