@@ -31,9 +31,9 @@ PARSER.add_argument(
 )
 
 
-def progress_bar(total, step, text):
+def progress_bar(_total, step, text):
     """Dump progress of model learning."""
-    print("{} -> {} {}".format(step, total, text))
+    print("{} {}".format(step, text))
 
 
 def main(options):
