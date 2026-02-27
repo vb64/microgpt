@@ -1,6 +1,7 @@
 """CLI interface."""
 import argparse
 
+from model import Model
 from dataset import Dataset
 
 
@@ -30,6 +31,11 @@ PARSER.add_argument(
 )
 
 
+def progress_bar(total, step, text):
+    """Dump progress of model learning."""
+    print("{} -> {} {}".format(step, total, text))
+
+
 def main(options):
     """Entry point."""
     print("MicroGPT runner.")
@@ -43,6 +49,9 @@ def main(options):
         if options.learn_cycles:
             learn_cycles = max(options.learn_cycles, learn_cycles)
         print("Learn {} docs from dataset {}".format(learn_cycles, data.file_name))
+        model = Model()
+        parameters_count = model.learn(data.docs[:learn_cycles], progress_bar=progress_bar)
+        print("Parameters:", parameters_count)
 
     print("Done")
 

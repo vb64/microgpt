@@ -149,7 +149,7 @@ class Model:  # pylint: disable=too-many-instance-attributes
                 p.grad = 0
 
             if progress_bar:
-                if progress_bar(step, "loss {:.4f}".format(loss.data)):
+                if progress_bar(num_steps, step, "loss {:.4f}".format(loss.data)):
                     return len(params)
 
         return len(params)
