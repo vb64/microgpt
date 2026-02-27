@@ -47,7 +47,7 @@ def main(options):
     elif options.command == Command.Learn:
         learn_cycles = len(data.docs)
         if options.learn_cycles:
-            learn_cycles = max(options.learn_cycles, learn_cycles)
+            learn_cycles = min(options.learn_cycles, learn_cycles)
         print("Learn {} docs from dataset {}".format(learn_cycles, data.file_name))
         model = Model()
         parameters_count = model.learn(data.docs[:learn_cycles], progress_bar=progress_bar)
