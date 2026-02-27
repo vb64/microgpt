@@ -26,3 +26,13 @@ class TestMain(TestBase):
 
         self.options.command = 'not_exist'
         assert main(self.options) is None
+
+    def test_cmd_learn(self):
+        """Check learn command."""
+        from cli import main, Command
+
+        self.options.command = Command.Learn
+        assert main(self.options) is None
+
+        self.options.learn_cycles = 1
+        assert main(self.options) is None
