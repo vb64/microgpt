@@ -3,6 +3,18 @@ import os
 from unittest import TestCase
 
 
+class MockModel:
+    """Mocked GPT model."""
+
+    def learn(self, docs, progress_bar=None):
+        """Mock learn method."""
+        return len(docs) + (1 if progress_bar else 0)
+
+    def ask(self, temperature=1):
+        """Mock ask method."""
+        return "temperature{}".format(temperature)
+
+
 class TestBase(TestCase):
     """Base test class."""
 

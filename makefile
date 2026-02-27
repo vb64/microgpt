@@ -22,6 +22,9 @@ all:
 cmd_dset:
 	$(PYTHON) $(SOURCE)/cli.py dataset dataset/en_names.txt
 
+cmd_learn:
+	$(PYTHON) $(SOURCE)/cli.py learn dataset/en_names.txt --learn_cycles=50
+
 test:
 	$(PTEST) -s $(TESTS)/test/$(T)
 

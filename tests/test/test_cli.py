@@ -2,7 +2,7 @@
 
 make test T=test_cli.py
 """
-from . import TestBase
+from . import TestBase, MockModel
 
 
 class TestMain(TestBase):
@@ -26,3 +26,24 @@ class TestMain(TestBase):
 
         self.options.command = 'not_exist'
         assert main(self.options) is None
+
+    def test_cmd_learn(self):
+        """Check learn command."""
+        import cli
+
+        model = cli.Model
+        cli.Model = MockModel
+
+        self.options.command = cli.Command.Learn
+        assert cli.main(self.options) is None
+
+        self.options.learn_cycles = 1
+        assert cli.main(self.options) is None
+
+        cli.Model = model
+
+    def test_progress_bar(self):
+        """Check progress_bar function."""
+        from cli import progress_bar
+
+        assert progress_bar(10, 1, 'xxx') is None

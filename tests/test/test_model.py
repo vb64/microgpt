@@ -21,7 +21,7 @@ class TestModel(TestBase):
 
         assert model.learn(
           self.data.docs[:3],
-          progress_bar=lambda step, txt: returns.pop()
+          progress_bar=lambda total, step, txt: returns.pop()
         ) == 3584
 
         model = Model()
