@@ -1,4 +1,4 @@
-"""Model micro."""
+"""Model micro GPT-2."""
 import random
 from autograd import matrix
 from tokens import Tokenizer
@@ -27,7 +27,7 @@ def rmsnorm(x):
 
 
 class Model:  # pylint: disable=too-many-instance-attributes
-    """Micro gpt."""
+    """GPT-2-like neural network architecture."""
 
     n_layer = 1  # depth of the transformer neural network (number of layers)
     n_embd = 16  # width of the network (embedding dimension)
