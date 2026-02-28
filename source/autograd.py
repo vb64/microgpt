@@ -1,10 +1,34 @@
-"""Autograd stuff."""
+"""Autograd engine."""
 import math
 import random
 
 
 class Value:
-    """Let there be Autograd to recursively apply the chain rule through a computation graph."""
+    """Let there be Autograd to recursively apply the chain rule through a computation graph.
+
+    Value wraps a single scalar number (.data) and tracks how it was computed.
+
+    Think of each operation as a little lego block: it takes some inputs,
+    produces an output (the forward pass), and it knows how its output would change with respect
+    to each of its inputs (the local gradient).
+
+    Thats all the information autograd needs from each block.
+    Everything else is just the chain rule, stringing the blocks together.
+
+    Every time you do math with Value objects (add, multiply, etc.),
+    the result is a new Value that remembers its inputs (_children)
+    and the local derivative of that operation (_local_grads).
+
+    The full set of lego blocks:
+
+    __add__
+    __mul__
+    __pow__
+    log
+    exp
+    relu
+
+    """
 
     __slots__ = ('data', 'grad', '_children', '_local_grads')  # Python optimization for memory usage
 
@@ -16,7 +40,7 @@ class Value:
         self._local_grads = local_grads  # local derivative of this node w.r.t. its children
 
     def __add__(self, other):
-        """Define + operator."""
+        """Define a + b Local gradients: d/da = 1, d/db = 1."""
         other = other if isinstance(other, Value) else Value(other)
         return Value(self.data + other.data, (self, other), (1, 1))
 
