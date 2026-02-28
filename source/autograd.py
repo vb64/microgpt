@@ -40,29 +40,29 @@ class Value:
         self._local_grads = local_grads  # local derivative of this node w.r.t. its children
 
     def __add__(self, other):
-        """Define a + b Local gradients: d/da = 1, d/db = 1."""
+        """Define a + b. Local gradients: d/da = 1, d/db = 1."""
         other = other if isinstance(other, Value) else Value(other)
         return Value(self.data + other.data, (self, other), (1, 1))
 
     def __mul__(self, other):
-        """Define * operator."""
+        """Define a * b. Local gradients: d/da = b, d/db = a."""
         other = other if isinstance(other, Value) else Value(other)
         return Value(self.data * other.data, (self, other), (other.data, self.data))
 
     def __pow__(self, other):
-        """Define ** operator."""
+        """Define a ** n. Local gradients: d/da = n * a**(n-1)."""
         return Value(self.data**other, (self,), (other * self.data**(other-1),))
 
     def log(self):
-        """Define math.log method."""
+        """Define local gradients: d/da = 1/a."""
         return Value(math.log(self.data), (self,), (1/self.data,))
 
     def exp(self):
-        """Define math.exp method."""
+        """Define local gradients: d/da = e**a."""
         return Value(math.exp(self.data), (self,), (math.exp(self.data),))
 
     def relu(self):
-        """Define relu method."""
+        """Define local gradients: d/da = 1a>0."""
         return Value(max(0, self.data), (self,), (float(self.data > 0),))
 
     def __neg__(self):
@@ -94,7 +94,10 @@ class Value:
         return other * self**-1
 
     def backward(self):
-        """Make back propogation."""
+        """Walk this graph in reverse topological order.
+
+        Starting from the loss, ending at the parameters, applying the chain rule at each step.
+        """
         topo = []
         visited = set()
 
