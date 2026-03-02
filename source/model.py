@@ -14,7 +14,12 @@ def linear(x, w):
 
 
 def softmax(logits):
-    """Return softmax."""
+    """Convert a vector of raw scores (logits), which can range −∞/+∞, into a probability distribution.
+
+    All values end up in [0,1] and sum to 1.
+    We subtract the max first for numerical stability (it doesn’t change the result mathematically,
+    but prevents overflow in exp).
+    """
     max_val = max(val.data for val in logits)
     exps = [(val - max_val).exp() for val in logits]
     total = sum(exps)
@@ -22,7 +27,13 @@ def softmax(logits):
 
 
 def rmsnorm(x):
-    """Return rmsnorm."""
+    """Root Mean Square Normalization.
+
+    Rescales a vector so its values have unit root-mean-square.
+    This keeps activations from growing or shrinking as they flow through the network,
+    which stabilizes training.
+    It’s a simpler variant of the LayerNorm used in the original GPT-2.
+    """
     ms = sum(xi * xi for xi in x) / len(x)
     scale = (ms + 1e-5) ** -0.5
     return [xi * scale for xi in x]
