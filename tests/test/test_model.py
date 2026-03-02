@@ -11,11 +11,14 @@ class TestModel(TestBase):
     def test_model(self):
         """Check model methods."""
         from model import Model, random
+        from autograd import Value
 
         random.seed(13)  # Let there be order among chaos. 42 ???
 
         model = Model()
-        assert model.state_dict
+        assert len(model.state_dict) == 7
+        params = [p for mat in model.state_dict.values() for row in mat for p in row]
+        assert len(params) == 3328
 
         returns = [True, False]
 
@@ -23,6 +26,18 @@ class TestModel(TestBase):
           self.data.docs[:3],
           progress_bar=lambda total, step, txt: returns.pop()
         ) == 3584
+
+        assert len(model.state_dict) == 9
+        params = [p for mat in model.state_dict.values() for row in mat for p in row]
+        assert len(params) == 3584
+
+        param = params[0]
+        assert isinstance(param, Value)
+
+        assert round(param.data, 3) == -0.023
+        assert param.grad == 0
+        assert param._children == ()  # pylint: disable=protected-access
+        assert param._local_grads == ()  # pylint: disable=protected-access
 
         model = Model()
         assert model.learn(self.data.docs[:3]) == 3584

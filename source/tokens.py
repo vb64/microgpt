@@ -1,4 +1,4 @@
-"""Tokens stuff."""
+"""Tokenizer."""
 
 
 class Tokenizer:

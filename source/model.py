@@ -1,18 +1,25 @@
-"""Model micro."""
+"""Model micro GPT-2.
+
+Define the model architecture: a function mapping tokens and parameters to logits over what comes next.
+Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsnorm, no biases, GeLU -> ReLU.
+"""
 import random
 from autograd import matrix
 from tokens import Tokenizer
 
 
-# Define the model architecture: a function mapping tokens and parameters to logits over what comes next
-# Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsnorm, no biases, GeLU -> ReLU
 def linear(x, w):
-    """Return linear."""
+    """Multiply vector 'x' and a weight matrix 'w'. Computes one dot product per row of 'w'."""
     return [sum(wi * xi for wi, xi in zip(wo, x)) for wo in w]
 
 
 def softmax(logits):
-    """Return softmax."""
+    """Convert a vector of raw scores (logits), which can range −∞/+∞, into a probability distribution.
+
+    All values end up in [0,1] and sum to 1.
+    We subtract the max first for numerical stability (it doesn’t change the result mathematically,
+    but prevents overflow in exp).
+    """
     max_val = max(val.data for val in logits)
     exps = [(val - max_val).exp() for val in logits]
     total = sum(exps)
@@ -20,14 +27,20 @@ def softmax(logits):
 
 
 def rmsnorm(x):
-    """Return rmsnorm."""
+    """Root Mean Square Normalization.
+
+    Rescales a vector so its values have unit root-mean-square.
+    This keeps activations from growing or shrinking as they flow through the network,
+    which stabilizes training.
+    It’s a simpler variant of the LayerNorm used in the original GPT-2.
+    """
     ms = sum(xi * xi for xi in x) / len(x)
     scale = (ms + 1e-5) ** -0.5
     return [xi * scale for xi in x]
 
 
 class Model:  # pylint: disable=too-many-instance-attributes
-    """Micro gpt."""
+    """GPT-2-like neural network architecture."""
 
     n_layer = 1  # depth of the transformer neural network (number of layers)
     n_embd = 16  # width of the network (embedding dimension)
@@ -53,7 +66,11 @@ class Model:  # pylint: disable=too-many-instance-attributes
             self.state_dict[l_name + 'mlp_fc2'] = matrix(self.n_embd, 4 * self.n_embd)
 
     def gpt(self, token_id, pos_id, keys, values):  # pylint: disable=too-many-locals
-        """Return gpt."""
+        """Process one token (of id token_id) at a specific position in time (pos_id).
+
+        Use some context from the previous iterations summarized by the activations in keys and values,
+        known as the KV Cache.
+        """
         tok_emb = self.state_dict['wte'][token_id]  # token embedding
         pos_emb = self.state_dict['wpe'][pos_id]  # position embedding
         x = [t + p for t, p in zip(tok_emb, pos_emb)]  # joint token and position embedding
@@ -154,8 +171,18 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
         return len(params)
 
-    def ask(self, temperature=1):  # in (0, 1], control the "creativity" of generated text, low to high
-        """Inference: may the model babble back to us."""
+    def ask(self, temperature=1):
+        """Inference: may the model babble back to us.
+
+        The temperature parameter controls randomness.
+        Before softmax, we divide the logits by the temperature.
+        A temperature of 1.0 samples directly from the models learned distribution.
+        Lower temperatures (like 0.5 here) sharpen the distribution,
+        making the model more conservative and likely to pick its top choices.
+        A temperature approaching 0 would always pick the single most likely token (greedy decoding).
+        Higher temperatures flatten the distribution and produce more diverse
+        but potentially less coherent output.
+        """
         keys, values = [[] for _ in range(self.n_layer)], [[] for _ in range(self.n_layer)]
         token_id = self.tok.bos
         sample = []

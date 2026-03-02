@@ -1,4 +1,4 @@
-"""Dataset stuff."""
+"""Dataset of documents."""
 
 
 class Dataset:
