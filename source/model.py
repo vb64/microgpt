@@ -66,7 +66,11 @@ class Model:  # pylint: disable=too-many-instance-attributes
             self.state_dict[l_name + 'mlp_fc2'] = matrix(self.n_embd, 4 * self.n_embd)
 
     def gpt(self, token_id, pos_id, keys, values):  # pylint: disable=too-many-locals
-        """Return gpt."""
+        """Process one token (of id token_id) at a specific position in time (pos_id).
+
+        Use some context from the previous iterations summarized by the activations in keys and values,
+        known as the KV Cache.
+        """
         tok_emb = self.state_dict['wte'][token_id]  # token embedding
         pos_emb = self.state_dict['wpe'][pos_id]  # position embedding
         x = [t + p for t, p in zip(tok_emb, pos_emb)]  # joint token and position embedding
