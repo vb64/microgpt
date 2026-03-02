@@ -132,3 +132,8 @@ class Value:
 def matrix(nout, nin, std=0.08):
     """Return matrix of Value with given dimensions."""
     return [[Value(random.gauss(0, std)) for _ in range(nin)] for _ in range(nout)]
+
+
+def matrix2json(mat):
+    """Return json data for given matrix."""
+    return [[val.data for val in row] for row in mat]

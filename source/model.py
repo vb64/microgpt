@@ -6,7 +6,7 @@ Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsno
 import random
 import json
 
-from autograd import matrix
+from autograd import matrix, matrix2json
 from tokens import Tokenizer
 
 
@@ -205,15 +205,9 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
     def save(self, file_name):
         """Save trained model to json file."""
-        model = {}
-        for key, mat in self.state_dict.items():
-            model[key] = []
-            for row in mat:
-                model[key].append([val.data for val in row])
-
         data = {
           'tokens': self.tok.to_json(),
-          'model': model,
+          'model': {key: matrix2json(mat) for key, mat in self.state_dict.items()},
         }
         with open(file_name, "wt", encoding='utf-8') as out:
             out.write(json.dumps(data, indent=2))
