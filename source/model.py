@@ -42,15 +42,20 @@ def rmsnorm(x):
 class Model:  # pylint: disable=too-many-instance-attributes
     """GPT-2-like neural network architecture."""
 
-    n_layer = 1  # depth of the transformer neural network (number of layers)
-    n_embd = 16  # width of the network (embedding dimension)
-    # note: the longest name is 15 characters
-    block_size = 16  # maximum context length of the attention window
-    n_head = 4  # number of attention heads
-    head_dim = n_embd // n_head  # derived dimension of each head
-
-    def __init__(self):
+    def __init__(
+      self,
+      n_layer=1,  # depth of the transformer neural network (number of layers)
+      n_embd=16,  # width of the network (embedding dimension)
+      n_head=4,  # number of attention heads
+      block_size=16  # maximum context length of the attention window
+    ):
         """Initialize the parameters, to store the knowledge of the model."""
+        self.n_layer = n_layer
+        self.n_embd = n_embd
+        self.n_head = n_head
+        self.head_dim = n_embd // n_head  # derived dimension of each head
+        self.block_size = block_size  # note: the longest name is 15 characters
+
         self.state_dict = {
           'wpe': matrix(self.block_size, self.n_embd),
         }
