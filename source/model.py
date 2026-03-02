@@ -4,7 +4,9 @@ Define the model architecture: a function mapping tokens and parameters to logit
 Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsnorm, no biases, GeLU -> ReLU.
 """
 import random
-from autograd import matrix
+import json
+
+from autograd import matrix, matrix2json, json2matrix
 from tokens import Tokenizer
 
 
@@ -200,3 +202,22 @@ class Model:  # pylint: disable=too-many-instance-attributes
             sample.append(self.tok.uchars[token_id])
 
         return ''.join(sample)
+
+    def save(self, file_name):
+        """Save trained model to json file."""
+        data = {
+          'tokens': self.tok.to_json(),
+          'model': {key: matrix2json(mat) for key, mat in self.state_dict.items()},
+        }
+        with open(file_name, "wt", encoding='utf-8') as out:
+            out.write(json.dumps(data, indent=2))
+
+    def load(self, file_name):
+        """Load trained model from json file."""
+        with open(file_name, "rt", encoding='utf-8') as inp:
+            data = json.loads(inp.read())
+
+        self.tok = Tokenizer.from_json(data['tokens'])
+        self.state_dict = {key: json2matrix(mat) for key, mat in data['model'].items()}
+
+        return len([p for mat in self.state_dict.values() for row in mat for p in row])
