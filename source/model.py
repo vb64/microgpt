@@ -208,7 +208,7 @@ class Model:  # pylint: disable=too-many-instance-attributes
         tokens = {
           'size': self.tok.size,
           'bos': self.tok.bos,
-          'uchars': self.tok.uchars,
+          'uchars': ''.join(self.tok.uchars),
         }
 
         data = {
