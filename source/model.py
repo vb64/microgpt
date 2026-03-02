@@ -217,3 +217,10 @@ class Model:  # pylint: disable=too-many-instance-attributes
         }
         with open(file_name, "wt", encoding='utf-8') as out:
             out.write(json.dumps(data, indent=2))
+
+    def load(self, file_name):
+        """Load trained model from json file."""
+        with open(file_name, "rt", encoding='utf-8') as inp:
+            data = json.loads(inp.read())
+
+        self.tok = Tokenizer.from_json(data['tokens'])
