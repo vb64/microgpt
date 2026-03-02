@@ -22,3 +22,9 @@ class TestTokens(TestBase):
 
         tokens = tok.tokenize(doc)
         assert tokens == [26, 4, 12, 12, 0, 26]
+
+        data = tok.to_json()
+        assert len(data) == 26
+        tok2 = Tokenizer.from_json(data)
+        assert tok.size == tok2.size
+        assert tok.bos == tok2.bos
