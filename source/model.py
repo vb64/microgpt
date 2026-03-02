@@ -205,8 +205,15 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
     def save(self, file_name):
         """Save trained model to json file."""
+        model = {}
+        for key, mat in self.state_dict.items():
+            model[key] = []
+            for row in mat:
+                model[key].append([val.data for val in row])
+
         data = {
           'tokens': self.tok.to_json(),
+          'model': model,
         }
         with open(file_name, "wt", encoding='utf-8') as out:
             out.write(json.dumps(data, indent=2))
