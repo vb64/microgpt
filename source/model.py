@@ -209,4 +209,4 @@ class Model:  # pylint: disable=too-many-instance-attributes
           'tokens': self.tok.to_json(),
         }
         with open(file_name, "wt", encoding='utf-8') as out:
-            out.write(json.dumps(data, indent=1))
+            out.write(json.dumps(data, indent=2))
