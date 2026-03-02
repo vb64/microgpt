@@ -137,3 +137,8 @@ def matrix(nout, nin, std=0.08):
 def matrix2json(mat):
     """Return json data for given matrix."""
     return [[val.data for val in row] for row in mat]
+
+
+def json2matrix(mat):
+    """Return matrix for given json data."""
+    return [[Value(val) for val in row] for row in mat]

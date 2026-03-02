@@ -6,7 +6,7 @@ Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsno
 import random
 import json
 
-from autograd import matrix, matrix2json
+from autograd import matrix, matrix2json, json2matrix
 from tokens import Tokenizer
 
 
@@ -218,3 +218,6 @@ class Model:  # pylint: disable=too-many-instance-attributes
             data = json.loads(inp.read())
 
         self.tok = Tokenizer.from_json(data['tokens'])
+        self.state_dict = {key: json2matrix(mat) for key, mat in data['model'].items()}
+
+        return len([p for mat in self.state_dict.values() for row in mat for p in row])
