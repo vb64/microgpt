@@ -97,6 +97,9 @@ class Value:
         """Walk this graph in reverse topological order.
 
         Starting from the loss, ending at the parameters, applying the chain rule at each step.
+
+        After backward() completes, every Value in the graph has a .grad containing dL/dv,
+        which tells us how the final loss would change if we nudged that value.
         """
         topo = []
         visited = set()
@@ -110,9 +113,19 @@ class Value:
                 topo.append(v)
 
         build_topo(self)
+
+        # We kick things off by setting self.grad = 1 at the loss node, because dL/dL=1
+        # the losses rate of change with respect to itself is trivially 1.
+        # From there, the chain rule just multiplies local gradients along every path back to the parameters.
         self.grad = 1
         for v in reversed(topo):
             for child, local_grad in zip(v._children, v._local_grads):  # pylint: disable=protected-access
+                # Note the += (accumulation, not assignment).
+                # When a value is used in multiple places in the graph (i.e. the graph branches),
+                # gradients flow back along each branch independently and must be summed.
+                # This is a consequence of the multivariable chain rule:
+                # if c contributes to L through multiple paths, the total derivative is the sum
+                # of contributions from each path.
                 child.grad += local_grad * v.grad
 
 
