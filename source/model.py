@@ -171,8 +171,18 @@ class Model:  # pylint: disable=too-many-instance-attributes
 
         return len(params)
 
-    def ask(self, temperature=1):  # in (0, 1], control the "creativity" of generated text, low to high
-        """Inference: may the model babble back to us."""
+    def ask(self, temperature=1):
+        """Inference: may the model babble back to us.
+
+        The temperature parameter controls randomness.
+        Before softmax, we divide the logits by the temperature.
+        A temperature of 1.0 samples directly from the models learned distribution.
+        Lower temperatures (like 0.5 here) sharpen the distribution,
+        making the model more conservative and likely to pick its top choices.
+        A temperature approaching 0 would always pick the single most likely token (greedy decoding).
+        Higher temperatures flatten the distribution and produce more diverse
+        but potentially less coherent output.
+        """
         keys, values = [[] for _ in range(self.n_layer)], [[] for _ in range(self.n_layer)]
         token_id = self.tok.bos
         sample = []
