@@ -18,3 +18,17 @@ class Tokenizer:
     def tokenize(self, doc):
         """Take single document, tokenize it, surround it with BOS special token on both sides."""
         return [self.bos] + [self.uchars.index(ch) for ch in doc] + [self.bos]
+
+    def to_json(self):
+        """Return json coded Tokenizer data."""
+        return ''.join(self.uchars)
+
+    @classmethod
+    def from_json(cls, data):
+        """Create instance from json coded Tokenizer data."""
+        tok = cls([])
+        tok.uchars = sorted(set(data))
+        tok.bos = len(tok.uchars)
+        tok.size = tok.bos + 1
+
+        return tok
