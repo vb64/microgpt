@@ -45,3 +45,5 @@ class TestModel(TestBase):
 
         model.block_size = 1
         assert len(model.ask()) > 0
+
+        assert model.save(self.build("saved.json")) is None
