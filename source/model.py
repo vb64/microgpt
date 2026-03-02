@@ -1,13 +1,15 @@
-"""Model micro GPT-2."""
+"""Model micro GPT-2.
+
+Define the model architecture: a function mapping tokens and parameters to logits over what comes next.
+Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsnorm, no biases, GeLU -> ReLU.
+"""
 import random
 from autograd import matrix
 from tokens import Tokenizer
 
 
-# Define the model architecture: a function mapping tokens and parameters to logits over what comes next
-# Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsnorm, no biases, GeLU -> ReLU
 def linear(x, w):
-    """Return linear."""
+    """Multiply vector 'x' and a weight matrix 'w'. Computes one dot product per row of 'w'."""
     return [sum(wi * xi for wi, xi in zip(wo, x)) for wo in w]
 
 

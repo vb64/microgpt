@@ -36,8 +36,8 @@ class TestModel(TestBase):
 
         assert round(param.data, 3) == -0.023
         assert param.grad == 0
-        assert param._children == ()
-        assert param._local_grads == ()
+        assert param._children == ()  # pylint: disable=protected-access
+        assert param._local_grads == ()  # pylint: disable=protected-access
 
         model = Model()
         assert model.learn(self.data.docs[:3]) == 3584
