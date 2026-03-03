@@ -10,18 +10,19 @@ class Command:
 
     Dataset = "dataset"
     Learn = "learn"
+    Ask = "ask"
 
 
 PARSER = argparse.ArgumentParser(description='MicroGPT runner.')
 
 PARSER.add_argument(
   "command",
-  choices=[Command.Dataset, Command.Learn],
+  choices=[Command.Dataset, Command.Learn, Command.Ask],
   help="Command to execute."
 )
 PARSER.add_argument(
   "filename",
-  help="Dataset file name."
+  help="Dataset or json file name."
 )
 PARSER.add_argument(
   "--learn_cycles",
@@ -44,12 +45,13 @@ def progress_bar(_total, step, text):
 def main(options):
     """Entry point."""
     print("MicroGPT runner.")
-    data = Dataset(options.filename)
 
     if options.command == Command.Dataset:
+        data = Dataset(options.filename)
         print("Dataset from", data.file_name, "docs:", len(data.docs))
 
     elif options.command == Command.Learn:
+        data = Dataset(options.filename)
         learn_cycles = len(data.docs)
         if options.learn_cycles:
             learn_cycles = min(options.learn_cycles, learn_cycles)
@@ -60,6 +62,12 @@ def main(options):
         if options.save:
             model.save(options.save)
             print("Save to:", options.save)
+
+    elif options.command == Command.Ask:
+        print("Load model:", options.filename)
+        model = Model()
+        parameters_count = model.load(options.filename)
+        print("Parameters:", parameters_count)
 
     print("Done")
 
