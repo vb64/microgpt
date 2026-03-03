@@ -50,3 +50,16 @@ class TestMain(TestBase):
         from cli import progress_bar
 
         assert progress_bar(10, 1, 'xxx') is None
+
+    def test_cmd_ask(self):
+        """Check ask command."""
+        import cli
+
+        model = cli.Model
+        cli.Model = MockModel
+
+        self.options.command = cli.Command.Ask
+        self.options.filename = self.fixture('en_names_1x16x16_doc_32032.json')
+        assert cli.main(self.options) is None
+
+        cli.Model = model
