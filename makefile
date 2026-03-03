@@ -20,10 +20,10 @@ LINT = $(PYTHON) -m pylint
 all:
 
 cmd_dset:
-	$(PYTHON) $(SOURCE)/cli.py dataset dataset/en_names.txt
+	$(PYTHON) $(SOURCE)/cli.py dataset fixtures/en_names.txt
 
 cmd_learn:
-	$(PYTHON) $(SOURCE)/cli.py learn dataset/en_names.txt --learn_cycles=50 --save=build/model.json
+	$(PYTHON) $(SOURCE)/cli.py learn fixtures/en_names.txt --learn_cycles=50 --save=build/model.json
 
 test:
 	$(PTEST) -s $(TESTS)/test/$(T)
