@@ -23,7 +23,7 @@ cmd_dset:
 	$(PYTHON) $(SOURCE)/cli.py dataset dataset/en_names.txt
 
 cmd_learn:
-	$(PYTHON) $(SOURCE)/cli.py learn dataset/en_names.txt --learn_cycles=50
+	$(PYTHON) $(SOURCE)/cli.py learn dataset/en_names.txt --learn_cycles=50 --save=build/model.json
 
 test:
 	$(PTEST) -s $(TESTS)/test/$(T)

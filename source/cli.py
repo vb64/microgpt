@@ -29,6 +29,11 @@ PARSER.add_argument(
   default=0,
   help="Number of learn cycles (integer). Default is 0 - entire dataset content."
 )
+PARSER.add_argument(
+  "--save",
+  default='',
+  help="Name of json file for save model after learning. By default the model is not saved."
+)
 
 
 def progress_bar(_total, step, text):
@@ -52,6 +57,9 @@ def main(options):
         model = Model()
         parameters_count = model.learn(data.docs[:learn_cycles], progress_bar=progress_bar)
         print("Parameters:", parameters_count)
+        if options.save:
+            model.save(options.save)
+            print("Save to:", options.save)
 
     print("Done")
 

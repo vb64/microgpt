@@ -40,6 +40,9 @@ class TestMain(TestBase):
         self.options.learn_cycles = 1
         assert cli.main(self.options) is None
 
+        self.options.save = self.build('test_save.json')
+        assert cli.main(self.options) is None
+
         cli.Model = model
 
     def test_progress_bar(self):

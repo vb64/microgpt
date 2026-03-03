@@ -14,6 +14,12 @@ class MockModel:
         """Mock ask method."""
         return "temperature{}".format(temperature)
 
+    def save(self, _fname):
+        """Mock save method."""
+
+    def load(self, _fname):
+        """Mock load method."""
+
 
 class TestBase(TestCase):
     """Base test class."""
