@@ -59,6 +59,7 @@ def main(options):
         print("Parameters:", parameters_count)
         if options.save:
             model.save(options.save)
+            print("Save to:", options.save)
 
     print("Done")
 
