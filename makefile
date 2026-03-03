@@ -25,6 +25,9 @@ cmd_dset:
 cmd_learn:
 	$(PYTHON) $(SOURCE)/cli.py learn fixtures/en_names.txt --learn_cycles=50 --save=build/model.json
 
+cmd_ask:
+	$(PYTHON) $(SOURCE)/cli.py ask fixtures/en_names_1x16x16_doc_32032.json
+
 test:
 	$(PTEST) -s $(TESTS)/test/$(T)
 
